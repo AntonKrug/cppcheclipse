@@ -195,6 +195,8 @@ public class Builder extends IncrementalProjectBuilder {
 		}
 
 		protected void processFile(IFile file) throws CoreException {
+			if (file == null) return;  // skip if file is undefined 
+			
 			try {
 				initChecker(file.getProject());
 			} catch (Exception e1) {
@@ -205,6 +207,7 @@ public class Builder extends IncrementalProjectBuilder {
 				throw new CoreException(status);
 			}
 			// only add file to list of file to be checked
+			if (checker == null) return;  // skip if checker is still not setup 
 			checker.addFile(file);
 			// at this point, the monitor gets no progress, because the checker
 			// isn't actually executed
