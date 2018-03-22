@@ -127,11 +127,14 @@ public class Builder extends IncrementalProjectBuilder {
 		}
 
 		public void runChecker() throws CoreException {
+			System.out.println("runChecker(): checker = " + checker);			
 			if (checker != null) {
 				// if project change, run checker for previous project now
 				try {
+					System.out.println("runChecker(): checker.run()");			
 					checker.run(monitor, progressReporter);
 				} catch (Exception e) {
+					System.out.println("runChecker(): checker.run() exception");			
 					// all exceptions in running lead to non-recoverable
 					// errors, therefore throw them as CoreExceptions
 					IStatus status = new Status(IStatus.ERROR,
@@ -140,6 +143,7 @@ public class Builder extends IncrementalProjectBuilder {
 					throw new CoreException(status);
 				}
 				// reset checker so that is is not reused
+				System.out.println("runChecker(): checker reset to null");			
 				checker = null;
 			}
 		}
@@ -151,6 +155,9 @@ public class Builder extends IncrementalProjectBuilder {
 		 * @throws CoreException
 		 */
 		private void initChecker(IProject currentProject) throws CoreException {
+			System.out.println("initChecker(): currentProject = " + currentProject.toString());
+			System.out.println("initChecker(): project = " + project.toString());
+			System.out.println("initChecker(): currentProject.equals(project) = " + currentProject.equals(project));
 			if (!currentProject.equals(project)) {
 				runChecker();
 				try {
@@ -163,7 +170,10 @@ public class Builder extends IncrementalProjectBuilder {
 										.getWorkspacePreferenceStore(),
 								currentProject, new ToolchainSettings(currentProject), problemReporter);
 						project = currentProject;
+						System.out.println("initChecker(): checker = " + checker);
+						System.out.println("initChecker(): project = " + project);
 					} catch (EmptyPathException e1) {
+						System.out.println("initChecker(): empty path ");
 						Runnable runnable = new Runnable() {
 							public void run() {
 								Shell shell = PlatformUI.getWorkbench()
@@ -184,6 +194,7 @@ public class Builder extends IncrementalProjectBuilder {
 						throw e1;
 					}
 				} catch (Exception e2) {
+					System.out.println("initChecker(): generic exception ");
 					// all exceptions in initialization lead to non-recoverable
 					// errors, therefore throw them as CoreExceptions
 					IStatus status = new Status(IStatus.ERROR,
@@ -195,8 +206,7 @@ public class Builder extends IncrementalProjectBuilder {
 		}
 
 		protected void processFile(IFile file) throws CoreException {
-			if (file == null) return;  // skip if file is undefined 
-			
+			System.out.println("processFile(): generic exception ");
 			try {
 				initChecker(file.getProject());
 			} catch (Exception e1) {
@@ -207,7 +217,6 @@ public class Builder extends IncrementalProjectBuilder {
 				throw new CoreException(status);
 			}
 			// only add file to list of file to be checked
-			if (checker == null) return;  // skip if checker is still not setup 
 			checker.addFile(file);
 			// at this point, the monitor gets no progress, because the checker
 			// isn't actually executed
