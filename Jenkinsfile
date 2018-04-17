@@ -4,7 +4,7 @@ pipeline {
     stage('build') {
       steps {
         sh '''cd com.googlecode.cppcheclipse.parent
-mvn clean verify
+/opt/bin/mvn clean verify
 '''
       }
     }
